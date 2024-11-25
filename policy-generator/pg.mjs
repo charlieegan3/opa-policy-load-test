@@ -4,29 +4,35 @@ let fileHandle;
 let ruleQuantity = process.argv[2];
 
 try {
-    await rm("../policy/policy.rego", { force: true });
-    fileHandle = await open("../policy/policy.rego", "a");
+  await rm("../policy/data.json", { force: true });
+  fileHandle = await open("../policy/data.json", "a");
 
-    await fileHandle.appendFile("package test\n\n");
-    await fileHandle.appendFile("import rego.v1\n");
+  await fileHandle.appendFile("{\"rules\":[");
 
-    for (let i = 0; i < ruleQuantity; i++) {
-        let ruleTemplate = `\n# METADATA
-# title: Rule ${i}
-# description: Rule ${i}...
-allow := result if {
-    input.subject.role == "role_${i}"
-    input.action == "action_${i}"
-    input.resource.type == "resource_${i}"
-    annotation := rego.metadata.rule()
-    result := {"title": annotation.title}
-}\n`;
+  for (let i = 0; i < ruleQuantity; i++) {
+    let ruleTemplate = `
+{
+  "title": "Rule ${i}",
+  "action": "action_${i}",
+  "subject_role": "role_${i}",
+  "resource_type": "resource_${i}"
+},
+`;
+    await fileHandle.appendFile(ruleTemplate);
+  }
 
-        await fileHandle.appendFile(ruleTemplate);
-    }
+  await fileHandle.appendFile(`
+{
+  "title": "Rule last",
+  "action": "action_last",
+  "subject_role": "role_last",
+  "resource_type": "resource_last"
+}
+`);
+  await fileHandle.appendFile("]}");
 } catch (err) {
-    console.log(err);
-    await fileHandle?.close();
+  console.log(err);
+  await fileHandle?.close();
 } finally {
-    await fileHandle?.close();
+  await fileHandle?.close();
 }

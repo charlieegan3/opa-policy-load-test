@@ -17,21 +17,44 @@ Then load the policies into OPA
 opa run -s -b ./policy
 ```
 
-Use the `input.json` as an example of input data when asking OPA for authorization.
+---
 
-Example:
+Make a curl:
 
-```json
-{
+```
+## cURL
+curl -X "POST" "http://localhost:8181/v1/data/test/allow" \
+     -H 'Content-Type: text/plain; charset=utf-8' \
+     -d $'{
     "input": {
         "subject": {
-            "role": "role_10000"
+            "role": "role_1000"
         },
         "resource": {
             "type": "resource_1000"
         },
         "action": "action_1000"
     }
+}'
+```
+
+---
+
+Use the `input.json` as an example of input data when asking OPA for authorization.
+
+Example:
+
+```json
+{
+  "input": {
+    "subject": {
+      "role": "role_10000"
+    },
+    "resource": {
+      "type": "resource_1000"
+    },
+    "action": "action_1000"
+  }
 }
 ```
 
@@ -41,11 +64,11 @@ Example:
 
 ```json
 {
-    "result": {
-        "allow": {
-            "title": "Rule 1000"
-        }
+  "result": {
+    "allow": {
+      "title": "Rule 1000"
     }
+  }
 }
 ```
 
